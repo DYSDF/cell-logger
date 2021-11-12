@@ -26,9 +26,8 @@ const MAX_CRYPTO_LEN = 128 - 11
 export default class Storer extends Hookable implements IStorer {
   private readonly DB: LogDB
 
-  private readonly encrypt: JSEncrypt
-  private readonly public_key?: string
-  private readonly private_key?: string
+  private readonly encrypt?: JSEncrypt
+  private readonly decrypt?: JSEncrypt
 
   private retry_quota: number = 3
 
@@ -37,20 +36,19 @@ export default class Storer extends Hookable implements IStorer {
     if (!LogDB.idbIsSupported()) throw new Error(RESULT_MSG.DB_NOT_SUPPORT)
     this.DB = new LogDB()
 
-    this.encrypt = new JSEncrypt({})
     if (globalConf.log_pubkey) {
-      this.public_key = globalConf.log_pubkey
-      this.encrypt.setPublicKey(this.public_key)
+      this.encrypt = new JSEncrypt()
+      this.encrypt.setPublicKey(globalConf.log_pubkey)
     }
     if (globalConf.log_prikey) {
-      this.private_key = globalConf.log_prikey
-      this.encrypt.setPrivateKey(this.private_key)
+      this.decrypt = new JSEncrypt()
+      this.decrypt.setPrivateKey(globalConf.log_prikey)
     }
   }
 
   private encode(data: TDBLog): string {
     const base64 = btoa(encodeURIComponent(JSON.stringify(data)))
-    if (this.public_key) {
+    if (this.encrypt) {
       const parts = ['']
       let no_err = true
       for (let i = 0; i < base64.length; i += MAX_CRYPTO_LEN) {
@@ -71,11 +69,11 @@ export default class Storer extends Hookable implements IStorer {
 
     if (enc.startsWith('$')) {
       enc = enc.substr(1)
-      if (!this.private_key) return RESULT_MSG.DB_NOT_DECODED
+      if (!this.decrypt) return RESULT_MSG.DB_NOT_DECODED
       const parts = enc.split('$')
       let no_err = true
       for (let i = 0; i < parts.length; i++) {
-        const dec = this.encrypt.decrypt(parts[i])
+        const dec = this.decrypt.decrypt(parts[i])
         if (!dec) {
           no_err = false
           break
