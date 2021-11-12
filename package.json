@@ -1,0 +1,53 @@
+{
+  "name": "cell-logger",
+  "version": "1.0.0",
+  "description": "front end logger.",
+  "main": "cjs/index.js",
+  "module": "esm/index.js",
+  "types": "types/",
+  "type-check": "tsc",
+  "files": [
+    "cjs",
+    "esm",
+    "types"
+  ],
+  "scripts": {
+    "test": "nyc mocha --require ts-node/register test/*.spec.ts",
+    "coverage": "nyc report",
+    "prebuild": "rimraf ./tjs ./types && tsc -p tsconfig.json -m ESNext",
+    "build:esm": "rimraf ./esm && rollup -f esm -c rollup.config.js -d ./esm",
+    "build:cjs": "rimraf ./cjs && rollup -f cjs -c rollup.config.js -d ./cjs",
+    "build": "npm run build:esm && npm run build:cjs",
+    "prepublishOnly": "npm run test && npm run build",
+    "ci": "npm run test && npm run coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/plugin-transform-runtime": "^7.14.5",
+    "@rollup/plugin-babel": "^5.3.0",
+    "@rollup/plugin-commonjs": "^19.0.0",
+    "@rollup/plugin-typescript": "^8.2.1",
+    "@types/chai": "^4.2.19",
+    "@types/dateformat": "^3.0.1",
+    "@types/lodash": "^4.14.170",
+    "@types/mocha": "^8.2.2",
+    "builtin-modules": "^3.2.0",
+    "chai": "^4.3.4",
+    "mocha": "^9.0.1",
+    "nyc": "^15.1.0",
+    "rimraf": "^3.0.2",
+    "rollup": "^2.52.3",
+    "ts-node": "^10.0.0",
+    "tslib": "^2.3.0",
+    "typescript": "^4.3.4"
+  },
+  "dependencies": {
+    "cell-env": "^1.0.2",
+    "cell-hookable": "^1.0.0",
+    "@rollup/plugin-json": "^4.1.0",
+    "dateformat": "^4.5.1",
+    "idb-managed": "^1.0.9",
+    "jsencrypt": "^3.2.0",
+    "lodash": "^4.17.21"
+  }
+}

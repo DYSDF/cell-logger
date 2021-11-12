@@ -1,0 +1,21 @@
+include:
+  - project: "web/gitlab-utils"
+    file: "cache_modules.yml"
+  - project: "web/gitlab-utils"
+    file: "wx_alarm.yml"
+
+test:
+  stage: test
+  script:
+    - npm run test
+  coverage: /All\s+files.*?\s+(\d+.\d+)/
+  except:
+    - master
+    - /^B_LC_RELEASE_.*/
+
+publish:
+  script:
+    - npm publish --registry http://nexus.yunshan.net/repository/ysnpm/
+  only:
+    - master
+    - /B_LC_RELEASE_.*/
