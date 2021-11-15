@@ -1,7 +1,14 @@
 {
   "name": "cell-logger",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "front end logger.",
+  "author": {
+    "name": "断崖上的风",
+    "email": "admin@duan-ya.com"
+  },
+  "repository": {
+    "url": "https://github.com/DYSDF/cell-logger.git"
+  },
   "main": "cjs/index.js",
   "module": "esm/index.js",
   "types": "types/",
